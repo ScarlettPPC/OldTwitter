@@ -5,6 +5,11 @@ let pages = [
         activeMenu: "home",
     },
     {
+        name: "compose",
+        paths: ["/compose", "/compose/post"],
+        activeMenu: "home",
+    },
+    {
         name: "notifications",
         paths: ["/notifications", "/notifications/mentions"],
         activeMenu: "notifications",
@@ -60,6 +65,7 @@ let pages = [
             "/logout",
             "/search",
             "/search-advanced",
+            "/compose"
         ],
     },
     {
@@ -131,9 +137,7 @@ if (
 if (realPath === "/messages") {
     location.replace("/home#dm");
 }
-if (realPath === "/compose/tweet") {
-    location.replace("/home");
-}
+
 if (realPath === "/intent/tweet" || realPath === "/share") {
     location.replace("/home#" + location.search);
 }
@@ -803,6 +807,7 @@ let page =
     if (page.activeMenu) {
         let el = document.getElementById(page.activeMenu);
         el.classList.add("menu-active");
+        console.log(el);
     }
     let version = document.getElementById("oldtwitter-version");
     if (version) {

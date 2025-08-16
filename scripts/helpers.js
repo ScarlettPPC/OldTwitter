@@ -78,6 +78,54 @@ function createModal(html, className, onclose, canclose) {
     document.body.appendChild(modal);
     return modal;
 }
+function createPopup(html, className, onclose, canclose) {
+    let modal = document.createElement("div");
+    modal.classList.add("modal");
+    let modal_content = document.createElement("div");
+    modal_content.classList.add("modal-content");
+    if (className) modal_content.classList.add(className);
+    modal_content.innerHTML = html;
+    modal.appendChild(modal_content);
+    let close = document.createElement("span");
+    close.classList.add("modal-close");
+    close.title = "ESC";
+    close.innerHTML = "&times;";
+    document.body.style.overflowY = "hidden";
+    function removeModal() {
+        modal.remove();
+        let event = new Event("findActiveTweet");
+        document.dispatchEvent(event);
+        document.removeEventListener("keydown", escapeEvent);
+        if (onclose) onclose();
+        let modals = document.getElementsByClassName("modal");
+        if (modals.length === 0) {
+            document.body.style.overflowY = "auto";
+        }
+    }
+    modal.removeModal = removeModal;
+    function escapeEvent(e) {
+        if (document.querySelector(".viewer-in")) return;
+        if (e.key === "Escape" || (e.altKey && e.keyCode === 78)) {
+            if (!canclose || canclose()) removeModal();
+        }
+    }
+    close.addEventListener("click", removeModal);
+    let isHoldingMouseFromContent = false;
+    modal_content.addEventListener("mousedown", () => {
+        isHoldingMouseFromContent = true;
+    });
+    document.addEventListener("mouseup", () => {
+        setTimeout(() => (isHoldingMouseFromContent = false), 10);
+    });
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal && !isHoldingMouseFromContent) {
+            if (!canclose || canclose()) removeModal();
+        }
+    });
+    document.addEventListener("keydown", escapeEvent);
+    document.body.appendChild(modal);
+    return modal;
+}
 async function handleFiles(files, mediaArray, mediaContainer, is_dm = false) {
     let images = [];
     let videos = [];
@@ -1579,6 +1627,7 @@ function isProfilePath(path) {
             "/old",
             "/search",
             "/donate",
+            "/compose",
         ].includes(path)
     )
         return false;
